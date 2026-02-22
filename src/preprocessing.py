@@ -22,6 +22,18 @@ def load_data():
     return df
 
 
+def cap_outliers(df):
+    df = df.copy()
+    for col in FEATURE_COLS:
+        Q1 = df[col].quantile(0.25)
+        Q3 = df[col].quantile(0.75)
+        IQR = Q3 - Q1
+        lower = Q1 - 1.5 * IQR
+        upper = Q3 + 1.5 * IQR
+        df[col] = df[col].clip(lower=lower, upper=upper)
+    return df
+
+
 def split_data(df, random_state=42):
     x = df[FEATURE_COLS]
     y = df[TARGET_COL]
@@ -38,4 +50,5 @@ def split_data(df, random_state=42):
 
 def load_and_prepare():
     df = load_data()
+    df = cap_outliers(df)
     return split_data(df)

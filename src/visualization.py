@@ -43,6 +43,24 @@ def plot_strength_distribution(df):
     plt.show()
 
 
+def plot_boxplots(df):
+    cols = FEATURE_COLS + [TARGET_COL]
+
+    fig, axes = plt.subplots(3, 3, figsize=(14, 10))
+    axes = axes.flatten()
+
+    for i, col in enumerate(cols):
+        axes[i].boxplot(df[col], patch_artist=True,
+                        boxprops=dict(facecolor="steelblue", color="navy"),
+                        medianprops=dict(color="white", linewidth=2))
+        axes[i].set_title(col)
+        axes[i].set_ylabel("Vrednost")
+
+    plt.suptitle("Box plotovi — pregled outliera po promenljivoj", fontsize=13)
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + "boxplots.png", dpi=150)
+    plt.show()
+
 
 def plot_correlation_heatmap(df):
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -67,4 +85,5 @@ if __name__ == "__main__":
     df = load_data()
     print_data_overview(df)
     plot_strength_distribution(df)
+    plot_boxplots(df)
     plot_correlation_heatmap(df)
