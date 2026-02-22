@@ -62,6 +62,22 @@ def plot_boxplots(df):
     plt.show()
 
 
+def plot_scatter_vs_strength(df):
+    fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+    axes = axes.flatten()
+
+    for i, col in enumerate(FEATURE_COLS):
+        axes[i].scatter(df[col], df[TARGET_COL], alpha=0.4, color="steelblue", s=15)
+        axes[i].set_xlabel(col)
+        axes[i].set_ylabel("Strength (MPa)")
+        axes[i].set_title(f"{col} vs Strength")
+
+    plt.suptitle("Odnos između sastojaka i čvrstoće betona", fontsize=13)
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + "scatter_vs_strength.png", dpi=150)
+    plt.show()
+
+
 def plot_correlation_heatmap(df):
     fig, ax = plt.subplots(figsize=(10, 8))
 
@@ -86,4 +102,5 @@ if __name__ == "__main__":
     print_data_overview(df)
     plot_strength_distribution(df)
     plot_boxplots(df)
+    plot_scatter_vs_strength(df)
     plot_correlation_heatmap(df)
