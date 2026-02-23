@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from preprocessing import load_data, FEATURE_COLS, TARGET_COL
+from preprocessing import load_data, cap_outliers, FEATURE_COLS, TARGET_COL
 
 FIGURES_DIR = "figures/"
 
@@ -56,9 +56,28 @@ def plot_boxplots(df):
         axes[i].set_title(col)
         axes[i].set_ylabel("Vrednost")
 
-    plt.suptitle("Box plotovi- pregled outliera po promenljivoj", fontsize=13)
+    plt.suptitle("Box plotovi — pre cappinga", fontsize=13)
     plt.tight_layout()
-    plt.savefig(FIGURES_DIR + "boxplots.png", dpi=150)
+    plt.savefig(FIGURES_DIR + "boxplots_before.png", dpi=150)
+    plt.show()
+
+
+def plot_boxplots_after(df):
+    cols = FEATURE_COLS + [TARGET_COL]
+
+    fig, axes = plt.subplots(3, 3, figsize=(14, 10))
+    axes = axes.flatten()
+
+    for i, col in enumerate(cols):
+        axes[i].boxplot(df[col], patch_artist=True,
+                        boxprops=dict(facecolor="steelblue", color="navy"),
+                        medianprops=dict(color="white", linewidth=2))
+        axes[i].set_title(col)
+        axes[i].set_ylabel("Vrednost")
+
+    plt.suptitle("Box plotovi — nakon cappinga", fontsize=13)
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + "boxplots_after.png", dpi=150)
     plt.show()
 
 
@@ -122,6 +141,8 @@ if __name__ == "__main__":
     print_data_overview(df)
     plot_strength_distribution(df)
     plot_boxplots(df)
-    plot_scatter_vs_strength(df)
-    plot_age_vs_strength(df)
-    plot_correlation_heatmap(df)
+    df_capped = cap_outliers(df)
+    plot_boxplots_after(df_capped)
+    plot_scatter_vs_strength(df_capped)
+    plot_age_vs_strength(df_capped)
+    plot_correlation_heatmap(df_capped)
