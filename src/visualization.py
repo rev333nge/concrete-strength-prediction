@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 
 from preprocessing import load_data, FEATURE_COLS, TARGET_COL
@@ -42,7 +43,6 @@ def plot_strength_distribution(df):
     plt.savefig(FIGURES_DIR + "strength_distribution.png", dpi=150)
     plt.show()
 
-
 def plot_boxplots(df):
     cols = FEATURE_COLS + [TARGET_COL]
 
@@ -78,6 +78,27 @@ def plot_scatter_vs_strength(df):
     plt.show()
 
 
+def plot_age_vs_strength(df):
+    df = df.copy()
+    bins = [0, 7, 14, 28, 56, 90, 180, 365]
+    labels = ["1–7", "8–14", "15–28", "29–56", "57–90", "91–180", "181–365"]
+    df["Age_group"] = pd.cut(df["Age"], bins=bins, labels=labels)
+
+    groups = [df[df["Age_group"] == label][TARGET_COL].values for label in labels]
+
+    fig, ax = plt.subplots(figsize=(12, 5))
+    ax.boxplot(groups, labels=labels, patch_artist=True,
+                    boxprops=dict(facecolor="steelblue", color="navy"),
+                    medianprops=dict(color="white", linewidth=2))
+
+    ax.set_title("Čvrstoća betona po starosnim grupama (dani)")
+    ax.set_xlabel("Starost (dani)")
+    ax.set_ylabel("Čvrstoća (MPa)")
+
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + "age_vs_strength.png", dpi=150)
+    plt.show()
+
 def plot_correlation_heatmap(df):
     fig, ax = plt.subplots(figsize=(10, 8))
 
@@ -96,11 +117,11 @@ def plot_correlation_heatmap(df):
     plt.savefig(FIGURES_DIR + "correlation_heatmap.png", dpi=150)
     plt.show()
 
-
 if __name__ == "__main__":
     df = load_data()
     print_data_overview(df)
     plot_strength_distribution(df)
     plot_boxplots(df)
     plot_scatter_vs_strength(df)
+    plot_age_vs_strength(df)
     plot_correlation_heatmap(df)
