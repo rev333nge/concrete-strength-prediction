@@ -56,7 +56,7 @@ def plot_boxplots(df):
         axes[i].set_title(col)
         axes[i].set_ylabel("Vrednost")
 
-    plt.suptitle("Box plotovi — pregled outliera po promenljivoj", fontsize=13)
+    plt.suptitle("Box plotovi- pregled outliera po promenljivoj", fontsize=13)
     plt.tight_layout()
     plt.savefig(FIGURES_DIR + "boxplots.png", dpi=150)
     plt.show()

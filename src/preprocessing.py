@@ -13,12 +13,20 @@ FEATURE_COLS = [
     "Fine Aggregate",
     "Age",
 ]
+
+MODEL_FEATURE_COLS = FEATURE_COLS + ["water_cement_ratio"]
 TARGET_COL = "Strength"
 
 
 def load_data():
     df = pd.read_csv(DATA_PATH)
     df.columns = df.columns.str.strip()
+    return df
+
+
+def add_features(df):
+    df = df.copy()
+    df["water_cement_ratio"] = df["Water"] / df["Cement"]
     return df
 
 
@@ -35,7 +43,7 @@ def cap_outliers(df):
 
 
 def split_data(df, random_state=42):
-    x = df[FEATURE_COLS]
+    x = df[MODEL_FEATURE_COLS]
     y = df[TARGET_COL]
 
     x_train, x_temp, y_train, y_temp = train_test_split(
@@ -50,5 +58,6 @@ def split_data(df, random_state=42):
 
 def load_and_prepare():
     df = load_data()
+    df = add_features(df)
     df = cap_outliers(df)
     return split_data(df)
