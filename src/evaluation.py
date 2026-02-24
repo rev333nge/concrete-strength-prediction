@@ -33,3 +33,27 @@ def comparison_table(results_dict):
         for split_name, metrics in splits.items():
             rows.append({"Model": model_name, "Split": split_name, **metrics})
     return pd.DataFrame(rows)
+
+
+if __name__ == "__main__":
+    from preprocessing import load_and_prepare
+    from models import train_ols, tune_rf, tune_xgb
+
+    x_train, x_val, x_test, y_train, y_val, y_test = load_and_prepare(cap=True)
+    ols = train_ols(x_train, y_train)
+
+    x_train_r, x_val_r, x_test_r, y_train_r, y_val_r, y_test_r = load_and_prepare(cap=False)
+
+    print("Tuning RF...")
+    rf = tune_rf(x_train_r, y_train_r)
+
+    print("Tuning XGBoost...")
+    xgb = tune_xgb(x_train_r, y_train_r)
+
+    results = {
+        "OLS": evaluate_model(ols, x_train, x_val, x_test, y_train, y_val, y_test),
+        "RF":  evaluate_model(rf, x_train_r, x_val_r, x_test_r, y_train_r, y_val_r, y_test_r),
+        "XGB": evaluate_model(xgb, x_train_r, x_val_r, x_test_r, y_train_r, y_val_r, y_test_r),
+    }
+
+    print(comparison_table(results).to_string(index=False))
