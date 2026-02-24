@@ -41,7 +41,7 @@ def train_xgb(x_train, y_train):
     return model
 
 
-def tune_xgb(x_train, y_train, x_val, y_val):
+def tune_xgb(x_train, y_train, x_val=None, y_val=None):
     param_grid = {
         "n_estimators": [100, 200, 300],
         "max_depth": [3, 4, 6],
@@ -52,12 +52,12 @@ def tune_xgb(x_train, y_train, x_val, y_val):
         "reg_lambda": [1.0, 5.0, 10.0],
     }
     grid = GridSearchCV(
-        XGBRegressor(random_state=42, early_stopping_rounds=20, eval_metric="rmse"),
+        XGBRegressor(random_state=42),
         param_grid,
         scoring="neg_root_mean_squared_error",
         cv=5,
         n_jobs=-1,
     )
-    grid.fit(x_train, y_train, eval_set=[(x_val, y_val)], verbose=False)
+    grid.fit(x_train, y_train)
     print(f"XGB best params: {grid.best_params_}")
     return grid.best_estimator_
