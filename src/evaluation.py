@@ -13,7 +13,8 @@ def mae(y_true, y_pred):
 
 
 def mape(y_true, y_pred):
-    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+    mask = np.array(y_true) != 0
+    return np.mean(np.abs((np.array(y_true)[mask] - np.array(y_pred)[mask]) / np.array(y_true)[mask])) * 100
 
 
 def evaluate_model(model, x_train, x_val, x_test, y_train, y_val, y_test):
