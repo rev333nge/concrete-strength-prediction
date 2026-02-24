@@ -99,8 +99,8 @@ def plot_scatter_vs_strength(df):
 
 def plot_age_vs_strength(df):
     df = df.copy()
-    bins = [0, 7, 14, 28, 56, 90, 180, 365]
-    labels = ["1–7", "8–14", "15–28", "29–56", "57–90", "91–180", "181–365"]
+    bins = [0, 7, 14, 28, 56, 90, 180]
+    labels = ["1–7", "8–14", "15–28", "29–56", "57–90", "91–180"]
     df["Age_group"] = pd.cut(df["Age"], bins=bins, labels=labels)
 
     groups = [df[df["Age_group"] == label][TARGET_COL].values for label in labels]
@@ -140,9 +140,9 @@ if __name__ == "__main__":
     df = load_data()
     print_data_overview(df)
     plot_strength_distribution(df)
+    plot_scatter_vs_strength(df)
+    plot_age_vs_strength(df)
+    plot_correlation_heatmap(df)
     plot_boxplots(df)
     df_capped = cap_outliers(df)
     plot_boxplots_after(df_capped)
-    plot_scatter_vs_strength(df_capped)
-    plot_age_vs_strength(df_capped)
-    plot_correlation_heatmap(df_capped)
