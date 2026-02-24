@@ -137,6 +137,44 @@ def plot_correlation_heatmap(df):
     plt.savefig(FIGURES_DIR + "correlation_heatmap.png", dpi=150)
     plt.show()
 
+def plot_single_model_diagnostics(name, model, x_test, y_test):
+    y_pred = model.predict(x_test)
+    residuals = y_pred - y_test
+
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+    lims = [min(y_test.min(), y_pred.min()), max(y_test.max(), y_pred.max())]
+    axes[0].scatter(y_test, y_pred, alpha=0.4, color="steelblue", s=15)
+    axes[0].plot(lims, lims, color="red", linewidth=1.5, linestyle="--")
+    axes[0].set_xlabel("Stvarna čvrstoća (MPa)")
+    axes[0].set_ylabel("Predviđena čvrstoća (MPa)")
+    axes[0].set_title("Stvarne vs predviđene vrednosti")
+
+    axes[1].scatter(y_pred, residuals, alpha=0.4, color="steelblue", s=15)
+    axes[1].axhline(0, color="red", linewidth=1.5, linestyle="--")
+    axes[1].set_xlabel("Predviđena čvrstoća (MPa)")
+    axes[1].set_ylabel("Rezidual (MPa)")
+    axes[1].set_title("Reziduali")
+
+    plt.suptitle(name, fontsize=13)
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + f"diagnostics_{name.lower()}.png", dpi=150)
+    plt.show()
+
+
+def plot_feature_importance_single(model, name):
+    imp = pd.Series(model.feature_importances_, index=model.feature_names_in_).sort_values()
+
+    fig, ax = plt.subplots(figsize=(7, 4))
+    ax.barh(imp.index, imp.values, color="steelblue")
+    ax.set_title(f"Važnost feature-a - {name}")
+    ax.set_xlabel("Važnost")
+
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + f"feature_importance_{name.lower()}.png", dpi=150)
+    plt.show()
+
+
 def plot_actual_vs_predicted(models_dict, splits_dict):
     fig, axes = plt.subplots(1, 3, figsize=(16, 5))
 
