@@ -56,8 +56,9 @@ def split_data(df, random_state=42):
     return x_train, x_val, x_test, y_train, y_val, y_test
 
 
-def load_and_prepare():
+def load_and_prepare(cap=True):
     df = load_data()
     df = add_features(df)
-    df = cap_outliers(df)
+    if cap:
+        df = cap_outliers(df)
     return split_data(df)
