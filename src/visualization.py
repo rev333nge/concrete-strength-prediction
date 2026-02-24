@@ -1,8 +1,9 @@
+import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from preprocessing import load_data, cap_outliers, FEATURE_COLS, TARGET_COL
+from preprocessing import load_data, cap_outliers, FEATURE_COLS, MODEL_FEATURE_COLS, TARGET_COL
 
 FIGURES_DIR = "figures/"
 
@@ -135,6 +136,73 @@ def plot_correlation_heatmap(df):
     plt.tight_layout()
     plt.savefig(FIGURES_DIR + "correlation_heatmap.png", dpi=150)
     plt.show()
+
+def plot_actual_vs_predicted(models_dict, splits_dict):
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+
+    for ax, (name, model) in zip(axes, models_dict.items()):
+        x_test, y_test = splits_dict[name]
+        y_pred = model.predict(x_test)
+
+        ax.scatter(y_test, y_pred, alpha=0.4, color="steelblue", s=15)
+        lims = [min(y_test.min(), y_pred.min()), max(y_test.max(), y_pred.max())]
+        ax.plot(lims, lims, color="red", linewidth=1.5, linestyle="--")
+        ax.set_title(name)
+        ax.set_xlabel("Stvarna čvrstoća (MPa)")
+        ax.set_ylabel("Predviđena čvrstoća (MPa)")
+
+    plt.suptitle("Stvarne vs predviđene vrednosti", fontsize=13)
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + "actual_vs_predicted.png", dpi=150)
+    plt.show()
+
+
+def plot_residuals(models_dict, splits_dict):
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+
+    for ax, (name, model) in zip(axes, models_dict.items()):
+        x_test, y_test = splits_dict[name]
+        y_pred = model.predict(x_test)
+        residuals = y_pred - y_test
+
+        ax.scatter(y_pred, residuals, alpha=0.4, color="steelblue", s=15)
+        ax.axhline(0, color="red", linewidth=1.5, linestyle="--")
+        ax.set_title(name)
+        ax.set_xlabel("Predviđena čvrstoća (MPa)")
+        ax.set_ylabel("Rezidual (MPa)")
+
+    plt.suptitle("Reziduali po modelu", fontsize=13)
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + "residuals.png", dpi=150)
+    plt.show()
+
+
+def plot_feature_importance(rf_model, xgb_model, ols_model):
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+    # RF
+    rf_imp = pd.Series(rf_model.feature_importances_, index=MODEL_FEATURE_COLS).sort_values()
+    axes[0].barh(rf_imp.index, rf_imp.values, color="steelblue")
+    axes[0].set_title("Random Forest")
+    axes[0].set_xlabel("Važnost")
+
+    # XGBoost
+    xgb_imp = pd.Series(xgb_model.feature_importances_, index=MODEL_FEATURE_COLS).sort_values()
+    axes[1].barh(xgb_imp.index, xgb_imp.values, color="steelblue")
+    axes[1].set_title("XGBoost")
+    axes[1].set_xlabel("Važnost")
+
+    # OLS koeficijenti
+    ols_coef = pd.Series(np.abs(ols_model.coef_), index=MODEL_FEATURE_COLS).sort_values()
+    axes[2].barh(ols_coef.index, ols_coef.values, color="steelblue")
+    axes[2].set_title("OLS (aps. koeficijenti)")
+    axes[2].set_xlabel("Apsolutna vrednost koeficijenta")
+
+    plt.suptitle("Važnost feature-a po modelu", fontsize=13)
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + "feature_importance.png", dpi=150)
+    plt.show()
+
 
 if __name__ == "__main__":
     df = load_data()

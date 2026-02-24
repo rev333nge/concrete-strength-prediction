@@ -38,6 +38,7 @@ def comparison_table(results_dict):
 if __name__ == "__main__":
     from preprocessing import load_and_prepare
     from models import train_ols, tune_rf, tune_xgb
+    from visualization import plot_actual_vs_predicted, plot_residuals, plot_feature_importance
 
     x_train, x_val, x_test, y_train, y_val, y_test = load_and_prepare(cap=True)
     ols = train_ols(x_train, y_train)
@@ -57,3 +58,14 @@ if __name__ == "__main__":
     }
 
     print(comparison_table(results).to_string(index=False))
+
+    models_dict = {"OLS": ols, "RF": rf, "XGB": xgb}
+    splits_dict = {
+        "OLS": (x_test, y_test),
+        "RF":  (x_test_r, y_test_r),
+        "XGB": (x_test_r, y_test_r),
+    }
+
+    plot_actual_vs_predicted(models_dict, splits_dict)
+    plot_residuals(models_dict, splits_dict)
+    plot_feature_importance(rf, xgb, ols)
