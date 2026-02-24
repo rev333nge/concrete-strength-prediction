@@ -18,11 +18,13 @@ def train_rf(x_train, y_train):
 
 def tune_rf(x_train, y_train):
     param_grid = {
+        "n_estimators": [100, 200, 300],
         "max_depth": [5, 10, 15, None],
         "min_samples_leaf": [1, 2, 4],
+        "max_features": [0.5, 0.75, 1.0],
     }
     grid = GridSearchCV(
-        RandomForestRegressor(n_estimators=100, random_state=42),
+        RandomForestRegressor(random_state=42),
         param_grid,
         scoring="neg_root_mean_squared_error",
         cv=5,
@@ -39,19 +41,23 @@ def train_xgb(x_train, y_train):
     return model
 
 
-def tune_xgb(x_train, y_train):
+def tune_xgb(x_train, y_train, x_val, y_val):
     param_grid = {
+        "n_estimators": [100, 200, 300],
         "max_depth": [3, 4, 6],
+        "learning_rate": [0.05, 0.1],
         "subsample": [0.7, 0.8, 1.0],
         "colsample_bytree": [0.7, 0.8, 1.0],
+        "reg_alpha": [0, 0.1, 1.0],
+        "reg_lambda": [1.0, 5.0, 10.0],
     }
     grid = GridSearchCV(
-        XGBRegressor(n_estimators=100, learning_rate=0.1, random_state=42),
+        XGBRegressor(random_state=42, early_stopping_rounds=20, eval_metric="rmse"),
         param_grid,
         scoring="neg_root_mean_squared_error",
         cv=5,
         n_jobs=-1,
     )
-    grid.fit(x_train, y_train)
+    grid.fit(x_train, y_train, eval_set=[(x_val, y_val)], verbose=False)
     print(f"XGB best params: {grid.best_params_}")
     return grid.best_estimator_

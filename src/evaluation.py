@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import statsmodels.api as sm
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 
@@ -27,6 +28,12 @@ def evaluate_model(model, x_train, x_val, x_test, y_train, y_val, y_test):
     return results
 
 
+def ols_summary(x_train, y_train):
+    x_with_const = sm.add_constant(x_train)
+    model = sm.OLS(y_train, x_with_const).fit()
+    print(model.summary())
+
+
 def comparison_table(results_dict):
     rows = []
     for model_name, splits in results_dict.items():
@@ -36,9 +43,15 @@ def comparison_table(results_dict):
 
 
 if __name__ == "__main__":
-    from preprocessing import load_and_prepare
+    from preprocessing import load_data, add_features, cap_outliers, MODEL_FEATURE_COLS, TARGET_COL, load_and_prepare
     from models import train_ols, tune_rf, tune_xgb
     from visualization import plot_actual_vs_predicted, plot_residuals, plot_feature_importance
+
+    df = load_data()
+    df = add_features(df)
+    df = cap_outliers(df)
+    print("OLS Summary — ceo dataset (statsmodels):")
+    ols_summary(df[MODEL_FEATURE_COLS], df[TARGET_COL])
 
     x_train, x_val, x_test, y_train, y_val, y_test = load_and_prepare(cap=True)
     ols = train_ols(x_train, y_train)
@@ -49,7 +62,7 @@ if __name__ == "__main__":
     rf = tune_rf(x_train_r, y_train_r)
 
     print("Tuning XGBoost...")
-    xgb = tune_xgb(x_train_r, y_train_r)
+    xgb = tune_xgb(x_train_r, y_train_r, x_val_r, y_val_r)
 
     results = {
         "OLS": evaluate_model(ols, x_train, x_val, x_test, y_train, y_val, y_test),
