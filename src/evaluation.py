@@ -83,3 +83,6 @@ if __name__ == "__main__":
     plot_actual_vs_predicted(models_dict, splits_dict)
     plot_residuals(models_dict, splits_dict)
     plot_feature_importance(rf, xgb, ols)
+
+    r2_score = xgb.score(x_test_r, y_test_r)
+    print(f"XGBoost R2 Score: {round(r2_score, 4)}")

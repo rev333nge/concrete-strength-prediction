@@ -41,7 +41,7 @@ def train_xgb(x_train, y_train):
     return model
 
 
-def tune_xgb(x_train, y_train, x_val=None, y_val=None):
+def tune_xgb(x_train, y_train):
     param_grid = {
         "n_estimators": [100, 200, 300],
         "max_depth": [3, 4, 6],
