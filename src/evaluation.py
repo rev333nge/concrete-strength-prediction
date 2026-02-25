@@ -13,7 +13,8 @@ def mae(y_true, y_pred):
 
 
 def mape(y_true, y_pred):
-    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+    mask = np.array(y_true) != 0
+    return np.mean(np.abs((np.array(y_true)[mask] - np.array(y_pred)[mask]) / np.array(y_true)[mask])) * 100
 
 
 def evaluate_model(model, x_train, x_val, x_test, y_train, y_val, y_test):
@@ -82,3 +83,6 @@ if __name__ == "__main__":
     plot_actual_vs_predicted(models_dict, splits_dict)
     plot_residuals(models_dict, splits_dict)
     plot_feature_importance(rf, xgb, ols)
+
+    r2_score = xgb.score(x_test_r, y_test_r)
+    print(f"XGBoost R2 Score: {round(r2_score, 4)}")
