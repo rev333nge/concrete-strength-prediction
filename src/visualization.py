@@ -33,7 +33,7 @@ def print_data_overview(df):
 
 
 def plot_strength_distribution(df):
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(6.5, 4))
 
     ax.hist(df[TARGET_COL], bins=30, color="steelblue", edgecolor="white")
     ax.set_title("Distribucija čvrstoće betona")
@@ -47,7 +47,7 @@ def plot_strength_distribution(df):
 def plot_boxplots(df):
     cols = FEATURE_COLS + [TARGET_COL]
 
-    fig, axes = plt.subplots(3, 3, figsize=(14, 10))
+    fig, axes = plt.subplots(3, 3, figsize=(11, 8))
     axes = axes.flatten()
 
     for i, col in enumerate(cols):
@@ -57,7 +57,7 @@ def plot_boxplots(df):
         axes[i].set_title(col)
         axes[i].set_ylabel("Vrednost")
 
-    plt.suptitle("Box plotovi — pre cappinga", fontsize=13)
+    plt.suptitle("Box plotovi pre cappinga", fontsize=13)
     plt.tight_layout()
     plt.savefig(FIGURES_DIR + "boxplots_before.png", dpi=150)
     plt.show()
@@ -66,7 +66,7 @@ def plot_boxplots(df):
 def plot_boxplots_after(df):
     cols = FEATURE_COLS + [TARGET_COL]
 
-    fig, axes = plt.subplots(3, 3, figsize=(14, 10))
+    fig, axes = plt.subplots(3, 3, figsize=(11, 8))
     axes = axes.flatten()
 
     for i, col in enumerate(cols):
@@ -76,14 +76,14 @@ def plot_boxplots_after(df):
         axes[i].set_title(col)
         axes[i].set_ylabel("Vrednost")
 
-    plt.suptitle("Box plotovi — nakon cappinga", fontsize=13)
+    plt.suptitle("Box plotovi nakon cappinga", fontsize=13)
     plt.tight_layout()
     plt.savefig(FIGURES_DIR + "boxplots_after.png", dpi=150)
     plt.show()
 
 
 def plot_scatter_vs_strength(df):
-    fig, axes = plt.subplots(2, 4, figsize=(16, 8))
+    fig, axes = plt.subplots(2, 4, figsize=(13, 6.5))
     axes = axes.flatten()
 
     for i, col in enumerate(FEATURE_COLS):
@@ -106,7 +106,7 @@ def plot_age_vs_strength(df):
 
     groups = [df[df["Age_group"] == label][TARGET_COL].values for label in labels]
 
-    fig, ax = plt.subplots(figsize=(12, 5))
+    fig, ax = plt.subplots(figsize=(9.5, 4))
     ax.boxplot(groups, labels=labels, patch_artist=True,
                     boxprops=dict(facecolor="steelblue", color="navy"),
                     medianprops=dict(color="white", linewidth=2))
@@ -120,7 +120,7 @@ def plot_age_vs_strength(df):
     plt.show()
 
 def plot_correlation_heatmap(df):
-    fig, ax = plt.subplots(figsize=(10, 8))
+    fig, ax = plt.subplots(figsize=(8, 6.5))
 
     corr = df[FEATURE_COLS + [TARGET_COL]].corr()
     sns.heatmap(
@@ -136,6 +136,44 @@ def plot_correlation_heatmap(df):
     plt.tight_layout()
     plt.savefig(FIGURES_DIR + "correlation_heatmap.png", dpi=150)
     plt.show()
+
+def plot_single_model_diagnostics(name, model, x_test, y_test):
+    y_pred = model.predict(x_test)
+    residuals = y_pred - y_test
+
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+
+    lims = [min(y_test.min(), y_pred.min()), max(y_test.max(), y_pred.max())]
+    axes[0].scatter(y_test, y_pred, alpha=0.4, color="steelblue", s=15)
+    axes[0].plot(lims, lims, color="red", linewidth=1.5, linestyle="--")
+    axes[0].set_xlabel("Stvarna čvrstoća (MPa)")
+    axes[0].set_ylabel("Predviđena čvrstoća (MPa)")
+    axes[0].set_title("Stvarne vs predviđene vrednosti")
+
+    axes[1].scatter(y_pred, residuals, alpha=0.4, color="steelblue", s=15)
+    axes[1].axhline(0, color="red", linewidth=1.5, linestyle="--")
+    axes[1].set_xlabel("Predviđena čvrstoća (MPa)")
+    axes[1].set_ylabel("Rezidual (MPa)")
+    axes[1].set_title("Reziduali")
+
+    plt.suptitle(name, fontsize=13)
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + f"diagnostics_{name.lower()}.png", dpi=150)
+    plt.show()
+
+
+def plot_feature_importance_single(model, name):
+    imp = pd.Series(model.feature_importances_, index=model.feature_names_in_).sort_values()
+
+    fig, ax = plt.subplots(figsize=(7, 4))
+    ax.barh(imp.index, imp.values, color="steelblue")
+    ax.set_title(f"Važnost feature-a - {name}")
+    ax.set_xlabel("Važnost")
+
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + f"feature_importance_{name.lower()}.png", dpi=150)
+    plt.show()
+
 
 def plot_actual_vs_predicted(models_dict, splits_dict):
     fig, axes = plt.subplots(1, 3, figsize=(16, 5))
