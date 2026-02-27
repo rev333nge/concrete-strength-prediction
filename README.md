@@ -30,11 +30,11 @@ Inženjering karakteristika dodaje `water_cement_ratio = Water / Cement` (Abrams
 
 | Model | RMSE | MAE | MAPE |
 |-------|------|-----|------|
-| OLS | 9.37 | 7.14 | 24.21% |
+| OLS | 9.04 | 6.97 | 23.86% |
 | Random Forest | 6.17 | 4.26 | 14.26% |
 | **XGBoost** | **5.49** | **3.71** | **11.73%** |
 
-XGBoost nadmašuje OLS za ~41% po RMSE. OLS pretpostavke su narušene (nelinearnost, nenormalnost reziduala), što opravdava korišćenje nelinearnih modela.
+XGBoost nadmašuje OLS za ~39% po RMSE. OLS je treniran sa 6 optimalnih feature-a (nakon ablacione analize), uz capping outliera na train skupu.
 
 ## Struktura projekta
 
