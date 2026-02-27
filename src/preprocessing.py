@@ -30,16 +30,19 @@ def add_features(df):
     return df
 
 
-def cap_outliers(df):
+def cap_outliers(df, bounds=None):
     df = df.copy()
+    if bounds is None:
+        bounds = {}
+        for col in FEATURE_COLS:
+            Q1 = df[col].quantile(0.25)
+            Q3 = df[col].quantile(0.75)
+            IQR = Q3 - Q1
+            bounds[col] = (Q1 - 1.5 * IQR, Q3 + 1.5 * IQR)
     for col in FEATURE_COLS:
-        Q1 = df[col].quantile(0.25)
-        Q3 = df[col].quantile(0.75)
-        IQR = Q3 - Q1
-        lower = Q1 - 1.5 * IQR
-        upper = Q3 + 1.5 * IQR
+        lower, upper = bounds[col]
         df[col] = df[col].clip(lower=lower, upper=upper)
-    return df
+    return df, bounds
 
 
 def split_data(df, random_state=42):
@@ -59,6 +62,9 @@ def split_data(df, random_state=42):
 def load_and_prepare(cap=True):
     df = load_data()
     df = add_features(df)
+    x_train, x_val, x_test, y_train, y_val, y_test = split_data(df)
     if cap:
-        df = cap_outliers(df)
-    return split_data(df)
+        x_train, bounds = cap_outliers(x_train)
+        x_val, _ = cap_outliers(x_val, bounds)
+        x_test, _ = cap_outliers(x_test, bounds)
+    return x_train, x_val, x_test, y_train, y_val, y_test
