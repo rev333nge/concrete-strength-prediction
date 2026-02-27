@@ -175,6 +175,54 @@ def plot_feature_importance_single(model, name):
     plt.show()
 
 
+def plot_ablation(ablation_results):
+    steps = [r["n_features"] for r in ablation_results]
+    val_rmse = [r["val_rmse"] for r in ablation_results]
+    train_rmse = [r["train_rmse"] for r in ablation_results]
+
+    best_idx = int(np.argmin(val_rmse))
+    best_n = steps[best_idx]
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(steps, train_rmse, "s--", color="coral", alpha=0.7, label="Train RMSE")
+    ax.plot(steps, val_rmse, "o-", color="steelblue", label="Validation RMSE")
+
+    # Annotate removed features
+    for r in ablation_results:
+        if r["removed"] is not None:
+            ax.annotate(
+                f"−{r['removed']}",
+                xy=(r["n_features"], r["val_rmse"]),
+                xytext=(0, 12),
+                textcoords="offset points",
+                fontsize=7,
+                ha="center",
+                rotation=30,
+            )
+
+    # Mark optimal
+    ax.axvline(best_n, color="green", linestyle=":", alpha=0.7)
+    ax.annotate(
+        f"Optimalno: {best_n} feat.",
+        xy=(best_n, val_rmse[best_idx]),
+        xytext=(15, -20),
+        textcoords="offset points",
+        fontsize=9,
+        color="green",
+        arrowprops=dict(arrowstyle="->", color="green"),
+    )
+
+    ax.set_xlabel("Broj feature-a")
+    ax.set_ylabel("RMSE (MPa)")
+    ax.set_title("Ablaciona analiza OLS- backward elimination")
+    ax.legend()
+    ax.invert_xaxis()
+
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + "ols_ablation.png", dpi=150)
+    plt.show()
+
+
 def plot_actual_vs_predicted(models_dict, splits_dict):
     fig, axes = plt.subplots(1, 3, figsize=(16, 5))
 
@@ -231,7 +279,8 @@ def plot_feature_importance(rf_model, xgb_model, ols_model):
     axes[1].set_xlabel("Važnost")
 
     # OLS koeficijenti
-    ols_coef = pd.Series(np.abs(ols_model.coef_), index=MODEL_FEATURE_COLS).sort_values()
+    ols_features = getattr(ols_model, "feature_names_in_", MODEL_FEATURE_COLS)
+    ols_coef = pd.Series(np.abs(ols_model.coef_), index=ols_features).sort_values()
     axes[2].barh(ols_coef.index, ols_coef.values, color="steelblue")
     axes[2].set_title("OLS (aps. koeficijenti)")
     axes[2].set_xlabel("Apsolutna vrednost koeficijenta")
