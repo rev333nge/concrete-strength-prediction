@@ -66,6 +66,9 @@ def validate_ols(x_train, y_train):
     model_sm = _fit_statsmodels(x_train, y_train)
     residuals = _residuals(model_sm, x_train, y_train)
 
+    mean_res = np.mean(residuals)
+    print(f"  Srednja vrednost reziduala : {mean_res:.6f} (ocekivano ~0)")
+
     lin_ok, _ = check_linearity(model_sm)
     ind_ok, _ = check_independence(residuals)
     nor_ok, _ = check_normality(residuals)

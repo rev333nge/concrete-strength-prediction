@@ -162,6 +162,22 @@ def plot_single_model_diagnostics(name, model, x_test, y_test):
     plt.show()
 
 
+def plot_residual_histogram(model, x, y):
+    y_pred = model.predict(x)
+    residuals = y_pred - y
+
+    fig, ax = plt.subplots(figsize=(7, 4))
+    ax.hist(residuals, bins=25, color="steelblue", edgecolor="white", alpha=0.7)
+    ax.axvline(0, color="red", linewidth=1.5, linestyle="--")
+    ax.set_xlabel("Rezidual (MPa)")
+    ax.set_ylabel("Frekvencija")
+    ax.set_title("Distribucija reziduala (OLS)")
+
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR + "residual_histogram_ols.png", dpi=150)
+    plt.show()
+
+
 def plot_feature_importance_single(model, name):
     imp = pd.Series(model.feature_importances_, index=model.feature_names_in_).sort_values()
 
