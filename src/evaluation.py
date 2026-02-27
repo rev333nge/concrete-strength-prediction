@@ -17,9 +17,12 @@ def mape(y_true, y_pred):
     return np.mean(np.abs((np.array(y_true)[mask] - np.array(y_pred)[mask]) / np.array(y_true)[mask])) * 100
 
 
-def evaluate_model(model, x_train, x_val, x_test, y_train, y_val, y_test):
+def evaluate_model(model, x_train, x_val, y_train, y_val, x_test=None, y_test=None):
     results = {}
-    for split_name, x, y in [("train", x_train, y_train), ("val", x_val, y_val), ("test", x_test, y_test)]:
+    splits = [("train", x_train, y_train), ("val", x_val, y_val)]
+    if x_test is not None and y_test is not None:
+        splits.append(("test", x_test, y_test))
+    for split_name, x, y in splits:
         y_pred = model.predict(x)
         results[split_name] = {
             "RMSE": round(rmse(y, y_pred), 2),
@@ -117,9 +120,9 @@ if __name__ == "__main__":
     xgb = tune_xgb(x_train_r, y_train_r)
 
     results = {
-        "OLS": evaluate_model(ols, x_train[ols_features], x_val[ols_features], x_test[ols_features], y_train, y_val, y_test),
-        "RF":  evaluate_model(rf, x_train_r, x_val_r, x_test_r, y_train_r, y_val_r, y_test_r),
-        "XGB": evaluate_model(xgb, x_train_r, x_val_r, x_test_r, y_train_r, y_val_r, y_test_r),
+        "OLS": evaluate_model(ols, x_train[ols_features], x_val[ols_features], y_train, y_val, x_test[ols_features], y_test),
+        "RF":  evaluate_model(rf, x_train_r, x_val_r, y_train_r, y_val_r, x_test_r, y_test_r),
+        "XGB": evaluate_model(xgb, x_train_r, x_val_r, y_train_r, y_val_r, x_test_r, y_test_r),
     }
 
     print(comparison_table(results).to_string(index=False))
