@@ -82,6 +82,13 @@ def validate_ols(x_train, y_train):
 
 if __name__ == "__main__":
     from preprocessing import load_and_prepare
+    from evaluation import ols_ablation
 
     x_train, x_val, x_test, y_train, y_val, y_test = load_and_prepare(cap=True)
-    validate_ols(x_train, y_train)
+
+    ablation_results = ols_ablation(x_train, x_val, y_train, y_val)
+    best_step = min(ablation_results, key=lambda r: r["val_rmse"])
+    ols_features = best_step["features"]
+    print(f"OLS optimalni feature-i ({len(ols_features)}): {ols_features}\n")
+
+    validate_ols(x_train[ols_features], y_train)
