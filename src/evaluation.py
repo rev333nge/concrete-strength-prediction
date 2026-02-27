@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     df = load_data()
     df = add_features(df)
-    df = cap_outliers(df)
+    df, _ = cap_outliers(df)
     print("OLS Summary — ceo dataset (statsmodels):")
     ols_summary(df[MODEL_FEATURE_COLS], df[TARGET_COL])
 
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     rf = tune_rf(x_train_r, y_train_r)
 
     print("Tuning XGBoost...")
-    xgb = tune_xgb(x_train_r, y_train_r, x_val_r, y_val_r)
+    xgb = tune_xgb(x_train_r, y_train_r)
 
     results = {
         "OLS": evaluate_model(ols, x_train, x_val, x_test, y_train, y_val, y_test),

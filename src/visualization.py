@@ -250,5 +250,5 @@ if __name__ == "__main__":
     plot_age_vs_strength(df)
     plot_correlation_heatmap(df)
     plot_boxplots(df)
-    df_capped = cap_outliers(df)
+    df_capped, _ = cap_outliers(df)
     plot_boxplots_after(df_capped)
