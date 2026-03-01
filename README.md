@@ -58,8 +58,8 @@ XGBoost nadmašuje OLS za ~39% po RMSE. OLS je treniran sa 6 optimalnih feature-
   [https://www.kaggle.com/datasets/prathamtripathi/regression-with-neural-networking](https://www.kaggle.com/datasets/prathamtripathi/regression-with-neural-networking)
 
 **Srodan rad**
-- Uzaki, A. (2023). *Concrete Strength Prediction (R=0.9511)*. Kaggle Notebook.
-  [https://www.kaggle.com/code/ahmeduzaki/concrete-strength-prediction-r-0-9511](https://www.kaggle.com/code/ahmeduzaki/concrete-strength-prediction-r-0-9511)
+- Kadiwal, A. *EDA — Concrete Strength Prediction (R²=0.93)*. Kaggle Notebook.
+  [https://www.kaggle.com/code/adityakadiwal/eda-concrete-strength-prediction-r2-0-93](https://www.kaggle.com/code/adityakadiwal/eda-concrete-strength-prediction-r2-0-93)
 
 **Literatura**
 - Raschka, S., Liu, Y., & Mirjalili, V. (2022). *Machine Learning with PyTorch and Scikit-Learn*. Packt Publishing.
