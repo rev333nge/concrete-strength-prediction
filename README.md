@@ -51,6 +51,24 @@ XGBoost nadmašuje OLS za ~39% po RMSE. OLS je treniran sa 6 optimalnih feature-
 └── notebook.ipynb             # kompletna analiza sa narativom
 ```
 
+## Reference
+
+**Dataset**
+- Tripathi, P. (2020). *Concrete Compressive Strength Dataset*. Kaggle.
+  [https://www.kaggle.com/datasets/prathamtripathi/regression-with-neural-networking](https://www.kaggle.com/datasets/prathamtripathi/regression-with-neural-networking)
+
+**Srodan rad**
+- Uzaki, A. (2023). *Concrete Strength Prediction (R=0.9511)*. Kaggle Notebook.
+  [https://www.kaggle.com/code/ahmeduzaki/concrete-strength-prediction-r-0-9511](https://www.kaggle.com/code/ahmeduzaki/concrete-strength-prediction-r-0-9511)
+
+**Literatura**
+- Raschka, S., Liu, Y., & Mirjalili, V. (2022). *Machine Learning with PyTorch and Scikit-Learn*. Packt Publishing.
+  [https://www.packtpub.com/product/machine-learning-with-pytorch-and-scikit-learn/9781801819312](https://www.packtpub.com/product/machine-learning-with-pytorch-and-scikit-learn/9781801819312)
+
+**Abrams-ov zakon**
+- Wikipedia: *Abrams' law — veza između vodeno-cementnog odnosa i čvrstoće betona*.
+  [https://en.wikipedia.org/wiki/Abrams%27_law](https://en.wikipedia.org/wiki/Abrams%27_law)
+
 ## Pokretanje
 
 ```bash
