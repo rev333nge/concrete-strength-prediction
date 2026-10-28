@@ -98,16 +98,16 @@ if __name__ == "__main__":
     df = load_data()
     df = add_features(df)
     df, _ = cap_outliers(df)
-    print("OLS Summary — ceo dataset (statsmodels):")
+    print("OLS Summary — full dataset (statsmodels):")
     ols_summary(df[MODEL_FEATURE_COLS], df[TARGET_COL])
 
     x_train, x_val, x_test, y_train, y_val, y_test = load_and_prepare(cap=True)
 
-    # Ablacija za optimalne OLS feature-e
+    # Ablation to find the optimal OLS features
     ablation_results = ols_ablation(x_train, x_val, y_train, y_val)
     best_step = min(ablation_results, key=lambda r: r["val_rmse"])
     ols_features = best_step["features"]
-    print(f"OLS optimalni feature-i ({len(ols_features)}): {ols_features}")
+    print(f"OLS optimal features ({len(ols_features)}): {ols_features}")
 
     ols = train_ols(x_train[ols_features], y_train)
 

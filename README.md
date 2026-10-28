@@ -1,18 +1,18 @@
-# Predikcija čvrstoće betona
+# Concrete Strength Prediction
 
-Projekat predviđa pritisnu čvrstoću betona (MPa) na osnovu sastava mešavine i starosti, koristeći tri modela: OLS linearnu regresiju, Random Forest i XGBoost.
+The project predicts the compressive strength of concrete (MPa) from its mix composition and age, using three models: OLS linear regression, Random Forest and XGBoost.
 
-## Istraživačka pitanja
+## Research questions
 
-1. Koji sastojci mešavine najviše utiču na čvrstoću?
-2. Da li je linearna regresija dovoljna, ili su neophodni nelinearni modeli?
-3. Koji sastav i starost betona daju optimalnu predviđenu čvrstoću?
+1. Which mix ingredients have the greatest effect on strength?
+2. Is linear regression sufficient, or are nonlinear models necessary?
+3. Which composition and age of concrete give the optimal predicted strength?
 
-## Podaci
+## Data
 
-Dataset sadrži **1.030 uzoraka** sa 8 ulaznih karakteristika i ciljnom promenljivom:
+The dataset contains **1,030 samples** with 8 input features and a target variable:
 
-| Karakteristika | Opis |
+| Feature | Description |
 |---|---|
 | Cement | kg/m³ |
 | Blast Furnace Slag | kg/m³ |
@@ -21,12 +21,12 @@ Dataset sadrži **1.030 uzoraka** sa 8 ulaznih karakteristika i ciljnom promenlj
 | Superplasticizer | kg/m³ |
 | Coarse Aggregate | kg/m³ |
 | Fine Aggregate | kg/m³ |
-| Age | dani (1–365) |
-| **Strength** | **MPa — ciljna promenljiva** |
+| Age | days (1–365) |
+| **Strength** | **MPa — target variable** |
 
-Inženjering karakteristika dodaje `water_cement_ratio = Water / Cement` (Abrams-ov zakon).
+Feature engineering adds `water_cement_ratio = Water / Cement` (Abrams' law).
 
-## Rezultati modela (test skup)
+## Model results (test set)
 
 | Model | RMSE | MAE | MAPE |
 |-------|------|-----|------|
@@ -34,55 +34,55 @@ Inženjering karakteristika dodaje `water_cement_ratio = Water / Cement` (Abrams
 | Random Forest | 6.17 | 4.26 | 14.26% |
 | **XGBoost** | **5.49** | **3.71** | **11.73%** |
 
-XGBoost nadmašuje OLS za ~39% po RMSE. OLS je treniran sa 6 optimalnih feature-a (nakon ablacione analize), uz capping outliera na train skupu.
+XGBoost outperforms OLS by ~39% in RMSE. OLS was trained on the 6 optimal features (after ablation analysis), with outlier capping on the train set.
 
-## Struktura projekta
+## Project structure
 
 ```
 ├── data/
 │   └── concrete_data.csv      # dataset
 ├── src/
-│   ├── preprocessing.py       # učitavanje, feature engineering, podela skupa
-│   ├── models.py              # treniranje OLS, RF, XGBoost (GridSearchCV)
-│   ├── evaluation.py          # metrike (RMSE, MAE, MAPE) i pokretanje pipeline-a
-│   ├── validation.py          # provera pretpostavki OLS modela
-│   └── visualization.py       # generisanje grafika
-├── figures/                   # generisani PNG grafici
-└── notebook.ipynb             # kompletna analiza sa narativom
+│   ├── preprocessing.py       # loading, feature engineering, data split
+│   ├── models.py              # training OLS, RF, XGBoost (GridSearchCV)
+│   ├── evaluation.py          # metrics (RMSE, MAE, MAPE) and pipeline entrypoint
+│   ├── validation.py          # OLS model assumption checks
+│   └── visualization.py       # plot generation
+├── figures/                   # generated PNG plots
+└── notebook.ipynb             # full analysis with narrative
 ```
 
-## Reference
+## References
 
 **Dataset**
 - Tripathi, P. (2020). *Concrete Compressive Strength Dataset*. Kaggle.
   [https://www.kaggle.com/datasets/prathamtripathi/regression-with-neural-networking](https://www.kaggle.com/datasets/prathamtripathi/regression-with-neural-networking)
 
-**Srodan rad**
+**Related work**
 - Kadiwal, A. *EDA — Concrete Strength Prediction (R²=0.93)*. Kaggle Notebook.
   [https://www.kaggle.com/code/adityakadiwal/eda-concrete-strength-prediction-r2-0-93](https://www.kaggle.com/code/adityakadiwal/eda-concrete-strength-prediction-r2-0-93)
 
-**Literatura**
+**Literature**
 - Raschka, S., Liu, Y., & Mirjalili, V. (2022). *Machine Learning with PyTorch and Scikit-Learn*. Packt Publishing.
   [https://www.packtpub.com/product/machine-learning-with-pytorch-and-scikit-learn/9781801819312](https://www.packtpub.com/product/machine-learning-with-pytorch-and-scikit-learn/9781801819312)
 
-**Abrams-ov zakon**
-- Wikipedia: *Abrams' law — veza između vodeno-cementnog odnosa i čvrstoće betona*.
+**Abrams' law**
+- Wikipedia: *Abrams' law — the relationship between the water-cement ratio and concrete strength*.
   [https://en.wikipedia.org/wiki/Abrams%27_law](https://en.wikipedia.org/wiki/Abrams%27_law)
 
-## Pokretanje
+## Running
 
 ```bash
 pip install -r requirements.txt
 
-# Kompletan pipeline: treniranje sva tri modela + grafici
+# Full pipeline: train all three models + plots
 python src/evaluation.py
 
-# OLS dijagnostika pretpostavki
+# OLS assumption diagnostics
 python src/validation.py
 
-# Samo generisanje grafika
+# Generate plots only
 python src/visualization.py
 
-# Interaktivna analiza
+# Interactive analysis
 jupyter notebook notebook.ipynb
 ```

@@ -19,24 +19,24 @@ def _residuals(model_sm, x, y):
 def check_linearity(model_sm, p_value_thresh=0.05):
     p_value = model_sm.f_pvalue
     passed = p_value < p_value_thresh
-    status = "OK  linearna veza" if passed else "X linearna veza nije potvrdjena"
-    print(f"  Linearnost (F-test)       : p = {p_value:.4e} -> {status}")
+    status = "OK  linear relationship" if passed else "X linear relationship not confirmed"
+    print(f"  Linearity (F-test)        : p = {p_value:.4e} -> {status}")
     return passed, p_value
 
 
 def check_independence(residuals):
     dw = durbin_watson(residuals)
     passed = 1.5 <= dw <= 2.5
-    status = "OK  nema autokorelacije" if passed else "X postoji autokorelacija"
-    print(f"  Nezavisnost gresaka (DW)  : d = {dw:.3f}     -> {status}")
+    status = "OK  no autocorrelation" if passed else "X autocorrelation present"
+    print(f"  Independence (DW)         : d = {dw:.3f}     -> {status}")
     return passed, dw
 
 
 def check_normality(residuals, p_value_thresh=0.05):
     p_value = normal_ad(residuals)[1]
     passed = p_value >= p_value_thresh
-    status = "OK  normalna raspodela" if passed else "X nije normalna raspodela"
-    print(f"  Normalnost reziduala (AD) : p = {p_value:.4f}   -> {status}")
+    status = "OK  normal distribution" if passed else "X not normally distributed"
+    print(f"  Residual normality (AD)   : p = {p_value:.4f}   -> {status}")
     return passed, p_value
 
 
@@ -44,8 +44,8 @@ def check_homoscedasticity(residuals, x, p_value_thresh=0.05):
     x_const = sm.add_constant(x)
     p_value = sm.stats.het_goldfeldquandt(residuals, x_const)[1]
     passed = p_value >= p_value_thresh
-    status = "OK  jednaka varijansa" if passed else "X nejednaka varijansa"
-    print(f"  Homoskedasticnost (GQ)    : p = {p_value:.4f}   -> {status}")
+    status = "OK  equal variance" if passed else "X unequal variance"
+    print(f"  Homoscedasticity (GQ)     : p = {p_value:.4f}   -> {status}")
     return passed, p_value
 
 
@@ -53,21 +53,21 @@ def check_collinearity(x, thresh=0.999):
     corr = pd.DataFrame(x).corr().values
     np.fill_diagonal(corr, np.nan)
     passed = not (np.nanmax(np.abs(corr)) > thresh)
-    status = "OK  nema savrsene kolinearnosti" if passed else "X postoji savrsena kolinearnost"
-    print(f"  Multikolinearnost         :             -> {status}")
+    status = "OK  no perfect collinearity" if passed else "X perfect collinearity present"
+    print(f"  Multicollinearity         :             -> {status}")
     return passed
 
 
 def validate_ols(x_train, y_train):
     print("=" * 57)
-    print("PROVERA PRETPOSTAVKI OLS MODELA")
+    print("OLS MODEL ASSUMPTION CHECKS")
     print("=" * 57)
 
     model_sm = _fit_statsmodels(x_train, y_train)
     residuals = _residuals(model_sm, x_train, y_train)
 
     mean_res = np.mean(residuals)
-    print(f"  Srednja vrednost reziduala : {mean_res:.6f} (ocekivano ~0)")
+    print(f"  Mean of residuals         : {mean_res:.6f} (expected ~0)")
 
     lin_ok, _ = check_linearity(model_sm)
     ind_ok, _ = check_independence(residuals)
@@ -77,7 +77,7 @@ def validate_ols(x_train, y_train):
 
     all_ok = all([lin_ok, ind_ok, nor_ok, hom_ok, col_ok])
     print("-" * 57)
-    print(f"  Model validan: {'DA' if all_ok else 'NE -- neke pretpostavke nisu ispunjene'}")
+    print(f"  Model valid: {'YES' if all_ok else 'NO -- some assumptions are not met'}")
     print("=" * 57)
 
     return all_ok
@@ -92,6 +92,6 @@ if __name__ == "__main__":
     ablation_results = ols_ablation(x_train, x_val, y_train, y_val)
     best_step = min(ablation_results, key=lambda r: r["val_rmse"])
     ols_features = best_step["features"]
-    print(f"OLS optimalni feature-i ({len(ols_features)}): {ols_features}\n")
+    print(f"OLS optimal features ({len(ols_features)}): {ols_features}\n")
 
     validate_ols(x_train[ols_features], y_train)
